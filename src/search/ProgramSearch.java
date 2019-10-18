@@ -12,24 +12,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramSearch {
-    public  List<String> Paths;
-    public Path root;
+    private  List<String> Paths;
+    private Path root;
+
     public ProgramSearch() {
         Paths = new ArrayList<>();
         root = java.nio.file.Paths.get("C:" + File.separator);
     }
 
-    @Override
-    public String toString() {
-        return "ProgramSearch{" +
-                "Paths=" + Paths +
-                ", root=" + root +
-                '}';
+    private List<List<String>> refineNames(List<String> fileContents) throws NullPointerException {
+        // Если список с именами был пустой
+        if (fileContents == null) {
+            throw new NullPointerException();
+        }
+        else {
+            // Лист листов. В нем хранятся листы, состоящие из слов названия программы из реестра
+            List<List<String>> refinedNames = new ArrayList<>();
+            for (int i = 0; i < fileContents.size(); i++) {
+                refinedNames.add(new ArrayList<>());
+            }
+            for (int i = 0; i < fileContents.size(); i++) {
+                // Проверки на системные программы
+                if (!( fileContents.get(i).contains("Windows")
+                        || fileContents.get(i).contains("Microsoft")
+                        || fileContents.get(i).contains("Update")
+                        || fileContents.get(i).contains("Universal")
+                        || fileContents.get(i).contains("vs_")
+                        || fileContents.get(i).contains("WinRT")
+                        || fileContents.get(i).contains("Intel(R)")
+                        || fileContents.get(i).contains("VS"))) {
+                    for (String name:
+                            fileContents.get(i).split(" ")) {
+                        refinedNames.get(i).add(name);
+                    }
+                }
+            }
+            refinedNames.removeIf(List::isEmpty);
+            return refinedNames;
+        }
     }
+    private List<String> getProgramPaths(List<String> fileNames, Path dir) {
 
-    public List<String> getProgramPaths(List<String> fileNames, Path dir) {
-
-        List<List<String>> names = FileHelper.refineNames(FileHelper.loadUnrefinedNames());
+        List<List<String>> names = refineNames(FileHelper.loadUnrefinedNames());
 
         try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path path : stream) {
@@ -39,8 +63,8 @@ public class ProgramSearch {
                     if (path.toAbsolutePath().toString().contains(".exe")) {
                         String nameWithoutExe = path.getFileName().toString();
                         nameWithoutExe = nameWithoutExe.replace(".exe", "");
-                        for (int i = 0; i < names.size(); i++) {
-                            if (names.get(i).contains(nameWithoutExe)) {
+                        for (List<String> name : names) {
+                            if (name.contains(nameWithoutExe)) {
                                 fileNames.add(path.toAbsolutePath().toString());
                                 break;
                             }
@@ -53,22 +77,7 @@ public class ProgramSearch {
         }
         return fileNames;
     }
-//    public List<String> getUsablePrograms () {
-//        // Не брать uninstaller'ы, системные программы
-//        List<String> unusablePrograms;
-//        unusablePrograms = this.getProgramNames(Paths, root); // Путь до корневого каталога
-//        List<String> names = new ArrayList<>();
-//        String[] pureName;
-//        // Отделяем имена программ от полных путей для удобства
-//        // А стоит ли?
-//        for (String nameWithPath : unusablePrograms) {
-//            pureName = nameWithPath.split(File.separator);
-//            if ( ) {
-//                names.add(nameWithPath);
-//            }
-//            //names.add(strings[strings.length - 1]);
-//        }
-//
-//        return names;
-//    }
+    public List<String> getPaths() {
+        return getProgramPaths(Paths, root);
+    }
 }

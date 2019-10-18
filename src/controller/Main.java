@@ -25,9 +25,9 @@ public class Main {
 //            System.out.println();
 //        }
 
-        List<String> paths = new ArrayList<>();
+        List<String> paths;
         ProgramSearch programSearch = new ProgramSearch();
-        paths = programSearch.getProgramPaths(programSearch.Paths, programSearch.root);
+        paths = programSearch.getPaths();
 
         for (String name : paths) {
             System.out.println(name);
