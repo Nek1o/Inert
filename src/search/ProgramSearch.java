@@ -1,4 +1,6 @@
-package kpo.programSearch;
+package search;
+
+import help.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramSearch {
-    private List<String> Paths;
-    Path root;
+    public  List<String> Paths;
+    public Path root;
     public ProgramSearch() {
         Paths = new ArrayList<>();
         root = java.nio.file.Paths.get("C:" + File.separator);
@@ -25,27 +27,32 @@ public class ProgramSearch {
                 '}';
     }
 
-//    private List<String> getProgramNames(List<String> fileNames, Path dir) {
-//
-//        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
-//            for (Path path : stream) {
-//                if(path.toFile().isDirectory()) {
-//                    if () {
-//                        getProgramNames(fileNames, path);
-//                    }
-//                } else {
-//                    if (path.toAbsolutePath().toString().contains(".exe")) {
-//                        fileNames.add(path.toAbsolutePath().toString());
-//                        System.out.println(path.getFileName());
-//                    }
-//
-//                }
-//            }
-//        } catch(IOException e) {
-//            e.printStackTrace();
-//        }
-//        return fileNames;
-//    }
+    public List<String> getProgramPaths(List<String> fileNames, Path dir) {
+
+        List<List<String>> names = FileHelper.refineNames(FileHelper.loadUnrefinedNames());
+
+        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path path : stream) {
+                if(path.toFile().isDirectory()) {
+                    getProgramPaths(fileNames, path);
+                } else {
+                    if (path.toAbsolutePath().toString().contains(".exe")) {
+                        String nameWithoutExe = path.getFileName().toString();
+                        nameWithoutExe = nameWithoutExe.replace(".exe", "");
+                        for (int i = 0; i < names.size(); i++) {
+                            if (names.get(i).contains(nameWithoutExe)) {
+                                fileNames.add(path.toAbsolutePath().toString());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        return fileNames;
+    }
 //    public List<String> getUsablePrograms () {
 //        // Не брать uninstaller'ы, системные программы
 //        List<String> unusablePrograms;

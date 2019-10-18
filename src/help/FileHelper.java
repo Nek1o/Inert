@@ -35,6 +35,7 @@ public class FileHelper {
             return null;
         }
     }
+    // Возможно стоит поместить в search
     public static List<List<String>> refineNames(List<String> fileContents) throws NullPointerException {
 
         // Если список с именами был пустой
