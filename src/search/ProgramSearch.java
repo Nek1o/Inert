@@ -15,6 +15,7 @@ public class ProgramSearch {
     private  List<String> Paths;
     private Path root;
 
+
     public ProgramSearch() {
         Paths = new ArrayList<>();
         root = java.nio.file.Paths.get("C:" + File.separator);
@@ -52,27 +53,32 @@ public class ProgramSearch {
         }
     }
     private List<String> getProgramPaths(List<String> fileNames, Path dir) {
+        try {
+            List<List<String>> names = refineNames(FileHelper.loadUnrefinedNames());
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
 
-        List<List<String>> names = refineNames(FileHelper.loadUnrefinedNames());
-
-        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
-            for (Path path : stream) {
-                if(path.toFile().isDirectory()) {
-                    getProgramPaths(fileNames, path);
-                } else {
-                    if (path.toAbsolutePath().toString().contains(".exe")) {
-                        String nameWithoutExe = path.getFileName().toString();
-                        nameWithoutExe = nameWithoutExe.replace(".exe", "");
-                        for (List<String> name : names) {
-                            if (name.contains(nameWithoutExe)) {
-                                fileNames.add(path.toAbsolutePath().toString());
-                                break;
+                for (Path path : stream) {
+                    if (path.toFile().isDirectory()) {
+                        getProgramPaths(fileNames, path);
+                    } else {
+                        if (path.toAbsolutePath().toString().contains(".exe")) {
+                            String nameWithoutExe = path.getFileName().toString();
+                            nameWithoutExe = nameWithoutExe.replace(".exe", "");
+                            for (List<String> name : names) {
+                                if (name.contains(nameWithoutExe)) {
+                                    fileNames.add(path.toAbsolutePath().toString());
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch(IOException e) {
+            return fileNames;
+        }
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
         return fileNames;

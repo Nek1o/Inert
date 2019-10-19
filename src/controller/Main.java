@@ -2,6 +2,7 @@ package controller;
 
 import help.FileHelper;
 import javafx.scene.control.ProgressBar;
+import processes.ProcessStarter;
 import search.ProgramSearch;
 
 import java.util.ArrayList;
@@ -14,23 +15,20 @@ public class Main {
         // TODO Запустить powershell скрипт, который это сделает
         // TODO Отфильтровать полученные программы
         // TODO Есть класс для открытия ассоцириованных программ, на всякий случай
-//        List<List<String>> names = FileHelper.refineNames(FileHelper.loadUnrefinedNames());
-//        for (List<String> listStr:
-//             names) {
-//            for (String name:
-//                 listStr) {
-//                System.out.print(name);
-//                System.out.print(" ");
-//            }
-//            System.out.println();
-//        }
+
+        //FileHelper.scriptStart();
 
         List<String> paths;
         ProgramSearch programSearch = new ProgramSearch();
         paths = programSearch.getPaths();
-
         for (String name : paths) {
             System.out.println(name);
         }
+
+
+
+//        ProcessStarter processStarter = new ProcessStarter();
+//        processStarter.("C:\\Users\\Никита\\AppData\\Local\\osu!\\osu!.exe", true);
+
     }
 }

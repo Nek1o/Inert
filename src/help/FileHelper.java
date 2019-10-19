@@ -1,5 +1,7 @@
 package help;
 
+import processes.ProcessStarter;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -7,13 +9,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileHelper {
-    private Path root;
 
-    public void scriptStart() {
+    public static void scriptStart() {
         // Стартуем скрипт
+        ProcessStarter processStarter = ProcessStarter.getInstance();
+        // Это работает, остается переопределить поток вывода
+        Process p = processStarter.start("powershell -ExecutionPolicy UnRestricted -File .\\Search.ps1",
+                false);
+
     }
-    public static List<String> loadUnrefinedNames() {
+    public static List<String> loadUnrefinedNames() throws InterruptedException {
+        // Необходимо подождать, пока скрипт закончит своё выполнение и файл создастся
+        // Иначе смерть и NullPointerException
+
+
         File file = new File("programas-instalados.txt");
+        if (!file.exists()) {
+            scriptStart();
+            Thread.sleep(10000);
+        }
         ArrayList<String> fileContents = new ArrayList<String>();
         try {
             BufferedReader reader =
