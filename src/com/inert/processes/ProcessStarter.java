@@ -1,6 +1,7 @@
 package com.inert.processes;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 
 public class ProcessStarter {
@@ -16,8 +17,8 @@ public class ProcessStarter {
     public static void scriptStart() {
         // Стартуем скрипт
         ProcessStarter processStarter = ProcessStarter.getInstance();
-        Process p = processStarter.start("powershell -ExecutionPolicy UnRestricted -File .\\Search.ps1",
-                false);
+        Process p = processStarter.start("powershell -ExecutionPolicy UnRestricted -File " + File.separator
+                        + "Search.ps1", false);
         // Пока обходим ожидание созданиия файлов вот так
         while (p.isAlive()) {
             try {

@@ -16,7 +16,7 @@ public class FileHelper {
         // Иначе смерть и NullPointerException
         // Сделано ожидание в scriptStart
 
-        File file = new File("programas-instalados.txt");
+        File file = new File("resources" + File.separator + "programas-instalados.txt");
         if (!file.exists()) {
             ProcessStarter.scriptStart();
         }
