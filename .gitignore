@@ -5,3 +5,5 @@ programas-instalados.txt
 Inert.iml
 Search.bat
 .gitignore.orig
+resources/*
+presets/*
