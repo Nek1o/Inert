@@ -76,7 +76,7 @@ public class ProgramSearch {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return fileNames;
+            //return fileNames;
         }
         catch (InterruptedException e) {
             e.printStackTrace();
