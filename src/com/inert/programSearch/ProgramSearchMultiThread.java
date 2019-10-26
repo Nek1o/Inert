@@ -8,12 +8,12 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.apache.commons.lang3.StringUtils;
 
 public class ProgramSearchMultiThread implements ProgramSearch {
-    // TODO Сделать параллельный вызов для обоих program files, желательно с параллельным удалением найденных файлов из массива
     private List<Path> roots;
     Map<String, List<FoundPath>> undecidedPathsMap;
-    private Map<String, Program> resultMap;
+
     private List<String> programNamesFromRegistry;
 
     private Path programFilesX86;
@@ -21,7 +21,6 @@ public class ProgramSearchMultiThread implements ProgramSearch {
 
     public ProgramSearchMultiThread() {
         roots = new ArrayList<>();
-        resultMap = new ConcurrentHashMap<>();
         undecidedPathsMap = new ConcurrentHashMap<>();
         programNamesFromRegistry = Collections.synchronizedList(new ArrayList<>());
         File[] rootFiles = File.listRoots();
@@ -75,9 +74,7 @@ public class ProgramSearchMultiThread implements ProgramSearch {
         System.out.println("Time" + (end - start) / 1000);
 
 
-        printOnlyBoth();
-
-        return resultMap;
+        return makeDecision();
     }
 
     private void printOnlyBoth() {
@@ -86,16 +83,8 @@ public class ProgramSearchMultiThread implements ProgramSearch {
             List<FoundPath> foundPathList = pair.getValue();
 
             for (FoundPath y : foundPathList) {
-                if(y == null) {
+                if (y == null) {
                     System.err.println("null for " + pgName);
-                    continue;
-                }
-                if (y.getTargetMarker() == null) {
-                    System.err.println(y.getPotentialPath());
-                    continue;
-                }
-                if (y.getPotentialPath() == null) {
-                    System.err.println(y.getTargetMarker());
                     continue;
                 }
                 if (y.getTargetMarker() == TargetMarker.BOTH) {
@@ -104,6 +93,47 @@ public class ProgramSearchMultiThread implements ProgramSearch {
             }
         }
 
+    }
+
+    private Map<String, Program> makeDecision() {
+        Map<String, Program> resultMap = new HashMap<>();
+
+
+        //отсекаем те для кого BOTH
+        for (Map.Entry<String, List<FoundPath>> pair : undecidedPathsMap.entrySet()) {
+            String pgName = pair.getKey();
+            List<FoundPath> foundPathList = pair.getValue();
+            int countBoth = 0;
+            for (FoundPath y : foundPathList) {
+                if (y == null) {
+                    System.err.println("Unexpected null for " + pgName);
+                    continue;
+                }
+                if (y.getTargetMarker() == TargetMarker.BOTH) {
+                    countBoth++;
+                }
+            }
+            for (FoundPath y : foundPathList) {
+                if (y == null) {
+                    System.err.println("Unexpected null for " + pgName);
+                    continue;
+                }
+                if (y.getTargetMarker() == TargetMarker.BOTH) {
+                    Program programToAdd;
+                    if(countBoth == 1) {
+                        resultMap.put(pgName,new Program(pgName,y.getPotentialPath(),Precision.CORRECT));
+                    }
+                    if(countBoth > 1) {
+                        resultMap.put(pgName,new Program(pgName,y.getPotentialPath(),Precision.SIMILAR));
+                    }
+                    resultMap.remove(pgName);
+
+                }
+            }
+        }
+
+
+        return resultMap;
     }
 
     class WalkRunner extends Thread {

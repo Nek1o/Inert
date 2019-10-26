@@ -15,13 +15,15 @@ public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
         // TODO Есть класс для открытия ассоцириованных программ, на всякий случай
 
+
         //FileHelper.scriptStart();
 
 //        Scanner scanner = new Scanner(System.in);
 //        scanner.nextInt();
         ProgramSearch programSearch = new ProgramSearchMultiThread();
-        for (Map.Entry<String, Program> x : programSearch.getPaths().entrySet()) {
-            System.out.println(x.getValue().toString());
+
+        for(Map.Entry<String,Program> x : programSearch.getPaths().entrySet()){
+            System.out.println(x.getValue());
         }
     }
 }

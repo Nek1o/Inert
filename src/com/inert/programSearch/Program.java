@@ -48,7 +48,7 @@ public class Program {
 
     @Override
     public String toString() {
-        return "Program{" + "name='" + name + '\'' + ", path='" + path + '\'' + ", precision=" + precision + '}';
+        return "Program name= " + name + ", path='" + path + ", precision=" + precision;
     }
 
     @Override
