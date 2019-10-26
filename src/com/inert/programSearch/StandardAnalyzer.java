@@ -13,12 +13,18 @@ public class StandardAnalyzer {
     private List<String> exes;
     private static StandardAnalyzer standardDirAnalyzer;
 
-    private StandardAnalyzer() throws IOException {
-        dirs = Files.readAllLines(Paths.get(STANDARD_DIR_PATH), StandardCharsets.UTF_8);
-        exes = Files.readAllLines(Paths.get(STANDARD_EXE_PATH), StandardCharsets.UTF_8);
+    private StandardAnalyzer()  {
+
+        try {
+            dirs = Files.readAllLines(Paths.get(STANDARD_DIR_PATH), StandardCharsets.UTF_8);
+            exes = Files.readAllLines(Paths.get(STANDARD_EXE_PATH), StandardCharsets.UTF_8);}
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public static StandardAnalyzer getInstance() throws IOException {
+    public static StandardAnalyzer getInstance()  {
         if (standardDirAnalyzer == null) {
             standardDirAnalyzer = new StandardAnalyzer();
         }
@@ -33,10 +39,10 @@ public class StandardAnalyzer {
     }
     private boolean isStandard(List<String> standardList, String name){
         for (String standard : standardList) {
-            if (name.contains(standard)) {
-                return false;
+            if (name.toLowerCase().contains(standard.toLowerCase())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }

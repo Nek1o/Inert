@@ -5,16 +5,14 @@ import com.inert.help.FileHelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ProgramSearchMultiThread implements ProgramSearch{
+public class ProgramSearchMultiThread implements ProgramSearch {
     // TODO Сделать параллельный вызов для обоих program files, желательно с параллельным удалением найденных файлов из массива
     private List<Path> roots;
+    Map<String, List<FoundPath>> undecidedPathsMap;
     private Map<String, Program> resultMap;
     private List<String> programNamesFromRegistry;
 
@@ -24,6 +22,7 @@ public class ProgramSearchMultiThread implements ProgramSearch{
     public ProgramSearchMultiThread() {
         roots = new ArrayList<>();
         resultMap = new ConcurrentHashMap<>();
+        undecidedPathsMap = new ConcurrentHashMap<>();
         programNamesFromRegistry = Collections.synchronizedList(new ArrayList<>());
         File[] rootFiles = File.listRoots();
         for (File file : rootFiles) {
@@ -49,12 +48,12 @@ public class ProgramSearchMultiThread implements ProgramSearch{
 
             for (int i = 0; i < fileContents.size(); i++) {
                 // Проверки на системные программы
-                if (!(fileContents.get(i).contains("Windows") || fileContents.get(i).contains("Microsoft") || fileContents.get(i).contains("Update") || fileContents.get(i).contains("Universal") || fileContents.get(i).contains("vs_") || fileContents.get(i).contains("WinRT") || fileContents.get(i).contains("Intel(R)") || fileContents.get(i).contains("VS") || fileContents.get(i).contains("NVIDIA"))) {
+                if (!StandardAnalyzer.getInstance().isStandardDir(fileContents.get(i))) {
                     programNamesFromRegistry.add(fileContents.get(i).toLowerCase());
                 }
             }
-            programNamesFromRegistry.removeIf(String::isEmpty);
         }
+        programNamesFromRegistry.removeIf(String::isEmpty);
     }
 
 
@@ -65,27 +64,61 @@ public class ProgramSearchMultiThread implements ProgramSearch{
         long start = System.currentTimeMillis();
         Thread task1 = new WalkRunner(programFiles);
         Thread task2 = new WalkRunner(programFilesX86);
+        Thread task3 = new WalkRunner(Paths.get("C:\\Program Files\\WinRAR"));
         task1.start();
         task2.start();
+//        task3.start();
         task1.join();
         task2.join();
+//        task3.join();
         long end = System.currentTimeMillis();
         System.out.println("Time" + (end - start) / 1000);
 
+
+        printOnlyBoth();
+
         return resultMap;
     }
-    class WalkRunner extends Thread{
+
+    private void printOnlyBoth() {
+        for (Map.Entry<String, List<FoundPath>> pair : undecidedPathsMap.entrySet()) {
+            String pgName = pair.getKey();
+            List<FoundPath> foundPathList = pair.getValue();
+
+            for (FoundPath y : foundPathList) {
+                if(y == null) {
+                    System.err.println("null for " + pgName);
+                    continue;
+                }
+                if (y.getTargetMarker() == null) {
+                    System.err.println(y.getPotentialPath());
+                    continue;
+                }
+                if (y.getPotentialPath() == null) {
+                    System.err.println(y.getTargetMarker());
+                    continue;
+                }
+                if (y.getTargetMarker() == TargetMarker.BOTH) {
+                    System.out.println(pgName + " : " + y.getPotentialPath());
+                }
+            }
+        }
+
+    }
+
+    class WalkRunner extends Thread {
         Path basicPath;
-        WalkRunner(Path basicPath){
+
+        WalkRunner(Path basicPath) {
             super();
             this.basicPath = basicPath;
         }
+
         @Override
         public void run() {
-            FileVisitor<Path> visitor = new SearchingFileVisitor(programNamesFromRegistry, resultMap);
+            FileVisitor<Path> visitor = new SearchingFileVisitor(programNamesFromRegistry, undecidedPathsMap);
             try {
-                Files.walkFileTree(basicPath, Collections.singleton(FileVisitOption.FOLLOW_LINKS),
-                        Integer.MAX_VALUE, visitor);
+                Files.walkFileTree(basicPath, Collections.singleton(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, visitor);
             }
             catch (IOException e) {
                 e.printStackTrace();
