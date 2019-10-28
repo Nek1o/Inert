@@ -63,7 +63,7 @@ public class ProgramSearchMultiThread implements ProgramSearch {
         long start = System.currentTimeMillis();
         Thread task1 = new WalkRunner(programFiles);
         Thread task2 = new WalkRunner(programFilesX86);
-        Thread task3 = new WalkRunner(Paths.get("C:\\Program Files\\WinRAR"));
+        //Thread task3 = new WalkRunner(Paths.get("C:\\Program Files\\WinRAR"));
         task1.start();
         task2.start();
 //        task3.start();
@@ -77,23 +77,6 @@ public class ProgramSearchMultiThread implements ProgramSearch {
         return makeDecision();
     }
 
-    private void printOnlyBoth() {
-        for (Map.Entry<String, List<FoundPath>> pair : undecidedPathsMap.entrySet()) {
-            String pgName = pair.getKey();
-            List<FoundPath> foundPathList = pair.getValue();
-
-            for (FoundPath y : foundPathList) {
-                if (y == null) {
-                    System.err.println("null for " + pgName);
-                    continue;
-                }
-                if (y.getTargetMarker() == TargetMarker.BOTH) {
-                    System.out.println(pgName + " : " + y.getPotentialPath());
-                }
-            }
-        }
-
-    }
 
     private Map<String, Program> makeDecision() {
         Map<String, Program> resultMap = new HashMap<>();
@@ -126,7 +109,6 @@ public class ProgramSearchMultiThread implements ProgramSearch {
                     if(countBoth > 1) {
                         resultMap.put(pgName,new Program(pgName,y.getPotentialPath(),Precision.SIMILAR));
                     }
-                    resultMap.remove(pgName);
 
                 }
             }
