@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramSearch {
+    // TODO Класс program для хранения имени и пути
+    // TODO Устанавливать соответствия пути и программы на этапе поиска
+    // TODO Вместо List путей использовать Map
     // TODO Сделать параллельный вызов для обоих program files, желательно с параллельным удалением найденных файлов из массива
     private  List<String> paths;
     private List<Path> roots;

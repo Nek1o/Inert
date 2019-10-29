@@ -48,7 +48,8 @@ public class FileHelper {
             BufferedWriter writer =
                     new BufferedWriter(
                             new OutputStreamWriter(
-                                    new FileOutputStream(new File("SavedPaths.txt")), StandardCharsets.UTF_16LE));
+                                    new FileOutputStream(new File("SavedPaths.txt")),
+                                    StandardCharsets.UTF_16LE));
             for (String path:
                  paths) {
                 writer.write(path + "\n");
