@@ -4,4 +4,8 @@ tmp.txt
 programas-instalados.txt
 Inert.iml
 Search.bat
-resources/*
+.gitignore.orig
+resources/tmp.txt
+resources/programas-instalados.txt
+presets/*
+target
