@@ -42,7 +42,6 @@ public class ProgramSearchMultiThread implements ProgramSearch {
         if (fileContents.isEmpty()) {
             throw new IllegalArgumentException();
         } else {
-
             for (int i = 0; i < fileContents.size(); i++) {
                 // Проверки на системные программы
                 if (!StandardAnalyzer.getInstance().isStandardDir(fileContents.get(i))) {
@@ -57,7 +56,6 @@ public class ProgramSearchMultiThread implements ProgramSearch {
     // Укороченный вызов для внешних объектов
     public Map<String, Program> getPaths() throws IOException, InterruptedException {
         refineNames(FileHelper.loadUnrefinedNames());
-
         long start = System.currentTimeMillis();
         Thread task1 = new WalkRunner(programFiles);
         Thread task2 = new WalkRunner(programFilesX86);
@@ -70,16 +68,12 @@ public class ProgramSearchMultiThread implements ProgramSearch {
 //        task3.join();
         long end = System.currentTimeMillis();
         System.out.println("Time" + (end - start) / 1000);
-
-
         return makeDecision();
     }
 
 
     private Map<String, Program> makeDecision() {
         Map<String, Program> resultMap = new HashMap<>();
-
-
         //отсекаем те для кого BOTH
         for (Map.Entry<String, List<FoundPath>> pair : undecidedPathsMap.entrySet()) {
             String pgName = pair.getKey();
@@ -102,10 +96,10 @@ public class ProgramSearchMultiThread implements ProgramSearch {
                 if (y.getTargetMarker() == TargetMarker.BOTH) {
                     Program programToAdd;
                     if(countBoth == 1) {
-                        resultMap.put(pgName,new Program(pgName,y.getPotentialPath(),Precision.CORRECT));
+                        resultMap.put(pgName, new Program(pgName,y.getPotentialPath(),Precision.CORRECT));
                     }
                     if(countBoth > 1) {
-                        resultMap.put(pgName,new Program(pgName,y.getPotentialPath(),Precision.SIMILAR));
+                        resultMap.put(pgName, new Program(pgName,y.getPotentialPath(),Precision.SIMILAR));
                     }
 
                 }

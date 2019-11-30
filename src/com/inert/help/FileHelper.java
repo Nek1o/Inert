@@ -1,12 +1,20 @@
 package com.inert.help;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.inert.processes.ProcessStarter;
+import com.inert.programSearch.Precision;
+import com.inert.programSearch.Program;
+import com.inert.programSearch.ProgramSearchMultiThread;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FileHelper {
 
@@ -35,27 +43,99 @@ public class FileHelper {
             // Если ничего не было записано
             if (fileContents.isEmpty()) {
                 return null;
-            }
-            else {
+            } else {
                 return fileContents;
             }
         } catch (IOException e) {
             return null;
         }
     }
-    public static void savePaths(List<String> paths) {
+
+    public static void savePathsAndPrograms(Map<String, Program> pathsAndPrograms) {
         try {
             BufferedWriter writer =
                     new BufferedWriter(
                             new OutputStreamWriter(
-                                    new FileOutputStream(new File("SavedPaths.txt")), StandardCharsets.UTF_16LE));
-            for (String path:
-                 paths) {
-                writer.write(path + "\n");
+                                    new FileOutputStream(new File("resources" + File.pathSeparator + "PathsAndProgramsStorage.txt")), StandardCharsets.UTF_16LE));
+            for (Map.Entry<String, Program> pair : pathsAndPrograms.entrySet()) {
+                // сохраняем через пробел и двоеточие
+                writer.write(pair.getValue().getName() + ": " + pair.getValue().getPath() + "\n");
             }
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Сохраняет программы, полученные поиском ProgramSearchMultiThread, в JSON файл в формате:
+     * programk: [ programName: name, programPath: path]
+     * @param pathsAndPrograms
+     * @throws IOException
+     */
+    public static void savePathsAndProgramsToJson(Map<String, Program> pathsAndPrograms) throws IOException {
+        try (JsonWriter writer = new JsonWriter(new FileWriter("resources" + File.separator + "PathsAndPrograms.json"))) {
+            writer.beginObject();
+            Integer k = 1;
+            for (Map.Entry<String, Program> pair : pathsAndPrograms.entrySet()) {
+                writer.name("program" + k.toString());
+                writer.beginArray();
+                writer.value(pair.getValue().getName());
+                writer.value(pair.getValue().getPath());
+                writer.endArray();
+                ++k;
+            }
+            writer.endObject();
+        }
+    }
+
+    /**
+     * Возвращает map из всех сохранённых программ и путей к ним, найденным
+     * ProgramSearchMultiThread, и сохраненных с помощью savePathsAndProgramsToJson
+     * @return
+     * @throws IOException
+     */
+    public static Map<String, Program> loadPathAndProgramsFromJson() throws IOException {
+        Map<String, Program> programs = new HashMap<>();
+        Integer k = 1;
+        try (JsonReader reader = new JsonReader(new FileReader("resources" + File.separator + "PathsAndPrograms.json"))) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                if (reader.nextName().equals("program" + k.toString())) {
+                    reader.beginArray();
+                    String programName = reader.nextString();
+                    String programPath = reader.nextString();
+                    programs.put(programName, new Program(programName, programPath, Precision.CORRECT));
+                    reader.endArray();;
+                }
+                ++k;
+            }
+            reader.endObject();
+        }
+        return programs;
+    }
+
+    // TODO класс для запуска и запуска в первый раз
+    public static Boolean isFirstLaunch() {
+        File presetStorageFile = new File("resources" + File.pathSeparator + "PathsAndProgramsStorage.txt");
+        return !presetStorageFile.exists();
+    }
+
+    public static void launchForTheFirstTime() throws IOException {
+
+        //File presetStorageFile = new File("resources" + File.pathSeparator + "PathsAndProgramsStorage.json");
+        //presetStorageFile.createNewFile();
+        ProgramSearchMultiThread programSearchMultiThread = new ProgramSearchMultiThread();
+
+        try {
+            Map<String, Program> programs = programSearchMultiThread.getPaths();
+            //savePathsAndPrograms(programs);
+            savePathsAndProgramsToJson(programs);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 }

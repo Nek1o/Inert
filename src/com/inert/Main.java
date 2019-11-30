@@ -1,6 +1,7 @@
 package com.inert;
 
 
+import com.inert.help.FileHelper;
 import com.inert.programSearch.Program;
 import com.inert.programSearch.ProgramSearch;
 import com.inert.programSearch.ProgramSearchMultiThread;
@@ -16,14 +17,11 @@ public class Main {
         // TODO Есть класс для открытия ассоцириованных программ, на всякий случай
 
 
-        //FileHelper.scriptStart();
-
-//        Scanner scanner = new Scanner(System.in);
-//        scanner.nextInt();
-        ProgramSearch programSearch = new ProgramSearchMultiThread();
-
-        for(Map.Entry<String,Program> x : programSearch.getPaths().entrySet()){
-            System.out.println(x.getValue());
-        }
+//        ProgramSearch programSearch = new ProgramSearchMultiThread();
+//
+//        for(Map.Entry<String,Program> x : programSearch.getPaths().entrySet()){
+//            System.out.println(x.getValue());
+//        }
+        FileHelper.launchForTheFirstTime();
     }
 }

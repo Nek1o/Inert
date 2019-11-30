@@ -1,5 +1,7 @@
 package com.inert.processes;
 
+import com.inert.programSearch.Program;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -54,6 +56,11 @@ public class ProcessStarter {
                 Thread.currentThread().interrupt();
             }
         }
+        return p;
+    }
+
+    public Process programStart (Program program) {
+        Process p = start(program.getPath(), false);
         return p;
     }
 }
