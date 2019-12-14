@@ -7,10 +7,13 @@ import com.inert.processes.ProcessStarter;
 import com.inert.programSearch.Precision;
 import com.inert.programSearch.Program;
 import com.inert.programSearch.ProgramSearchMultiThread;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,25 +54,39 @@ public class FileHelper {
         }
     }
 
-    public static void savePathsAndPrograms(Map<String, Program> pathsAndPrograms) {
-        try {
-            BufferedWriter writer =
-                    new BufferedWriter(
-                            new OutputStreamWriter(
-                                    new FileOutputStream(new File("resources" + File.pathSeparator + "PathsAndProgramsStorage.txt")), StandardCharsets.UTF_16LE));
-            for (Map.Entry<String, Program> pair : pathsAndPrograms.entrySet()) {
-                // сохраняем через пробел и двоеточие
-                writer.write(pair.getValue().getName() + ": " + pair.getValue().getPath() + "\n");
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    /* TODO сохранять в формате имя : путь. При запуске считывать и хранить в ОЗУ в map
+            При создании пресета выбирать по имени из map'а и созранять PresetHelper'ом
+    */
+    public static void savePathsAndPrograms(Map<String, Program> pathsAndPrograms) throws IOException {
+        BufferedWriter writer =
+                new BufferedWriter(
+                        new OutputStreamWriter(
+                                new FileOutputStream(new File("resources" + File.pathSeparator +
+                                        "PathsAndProgramsStorage.txt")), StandardCharsets.UTF_16LE));
+        for (Map.Entry<String, Program> pair : pathsAndPrograms.entrySet()) {
+            // сохраняем через пробел и двоеточие
+            writer.write(pair.getValue().getName() + " : " + pair.getValue().getPath() + "\n");
         }
+        writer.close();
+    }
+
+    public static Map<String, Program> loadPathsAndPrograms() throws IOException {
+        Map<String, Program> loadedPathsAndPrograms = new HashMap<>();
+        List<String> lines;
+        lines = Files.readAllLines(Paths.get("resources" + File.pathSeparator +
+                "PathsAndProgramsStorage.txt"), StandardCharsets.UTF_16LE);
+        for (String line : lines) {
+            loadedPathsAndPrograms.put(line.substring(0, line.indexOf(" :")), // имя
+                    new Program(line.substring(0, line.indexOf(" :")), // имя
+                            line.substring(line.indexOf(": ") + 1))); // путь
+        }
+        return loadedPathsAndPrograms;
     }
 
     /**
      * Сохраняет программы, полученные поиском ProgramSearchMultiThread, в JSON файл в формате:
      * programk: [ programName: name, programPath: path]
+     *
      * @param pathsAndPrograms
      * @throws IOException
      */
@@ -92,6 +109,7 @@ public class FileHelper {
     /**
      * Возвращает map из всех сохранённых программ и путей к ним, найденным
      * ProgramSearchMultiThread, и сохраненных с помощью savePathsAndProgramsToJson
+     *
      * @return
      * @throws IOException
      */
@@ -106,7 +124,8 @@ public class FileHelper {
                     String programName = reader.nextString();
                     String programPath = reader.nextString();
                     programs.put(programName, new Program(programName, programPath, Precision.CORRECT));
-                    reader.endArray();;
+                    reader.endArray();
+                    ;
                 }
                 ++k;
             }
@@ -122,15 +141,13 @@ public class FileHelper {
     }
 
     public static void launchForTheFirstTime() throws IOException {
-
         //File presetStorageFile = new File("resources" + File.pathSeparator + "PathsAndProgramsStorage.json");
         //presetStorageFile.createNewFile();
         ProgramSearchMultiThread programSearchMultiThread = new ProgramSearchMultiThread();
-
         try {
             Map<String, Program> programs = programSearchMultiThread.getPaths();
             //savePathsAndPrograms(programs);
-            savePathsAndProgramsToJson(programs);
+            savePathsAndPrograms(programs);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

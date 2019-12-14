@@ -1,10 +1,16 @@
 package com.inert.programSearch;
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Program {
     private String name;
     private String path;
+    @JsonIgnore
     private Precision precision;
     //...
 
