@@ -7,11 +7,11 @@ public class PathAnalyzerTest {
 
     @Test
     public void testInFile(){
-        String fileName = "myprogram.exe";
+        String fileName = "audacity.exe";
         String[] paths = {
-                "C:\\Users\\Анатолий\\Desktop\\Inert-master\\myprogram.exe",
-                "C:\\Program Files (x86)\\Hero Editor\\myprogram.exe",
-                "C:\\Program Files (x86)\\DeskPins\\myprogram.exe"
+                "C:\\Users\\Никита\\Desktop\\audacity.exe",
+                "C:\\Program Files\\Mozilla Firefox\\audacity.exe",
+                "C:\\Program Files\\MATLAB\\audacity.exe"
         };
 
         for (int i = 0; i < paths.length; i++) {
@@ -21,29 +21,29 @@ public class PathAnalyzerTest {
     }
     @Test
     public void testInPath(){
-        String fileName = "myprogram.exe";
+        String[] fileName = {"osu!.exe", "audacity.exe"};
+
         String[] paths = {
-                "C:\\Users\\myprogram\\Desktop\\Inert-master\\myp3456rogram.exe",
-                "C:\\Program Files (x86)\\myprogram\\mypro567867589gram.exe",
-                "C:\\myprogram\\DeskPins\\mypr56874ogra46m.exe"
+                "C:\\Users\\Никита\\AppData\\Local\\osu!\\os123213u!.exe",
+                "C:\\Program Files (x86)\\Audacity\\audaci123213ty.exe"
         };
 
         for (int i = 0; i < paths.length; i++) {
-            Assert.assertEquals(TargetMarker.IN_PATH, PathAnalyzer.analyse(fileName,paths[i]));
+            Assert.assertEquals(TargetMarker.IN_PATH, PathAnalyzer.analyse(fileName[i],paths[i]));
         }
 
     }
     @Test
     public void testBoth(){
-        String fileName = "myprogram.exe";
+        String[] fileName ={"osu!.exe", "Katawa Shoujo.exe", "audacity.exe"};
         String[] paths = {
-                "C:\\Users\\myprogram\\Desktop\\Inert-master\\myprogram.exe",
-                "C:\\Program Files (x86)\\myprogram\\myprogram.exe",
-                "C:\\myprogram\\DeskPins\\myprogram.exe"
+                "C:\\Users\\Никита\\AppData\\Local\\osu!\\osu!.exe",
+                "\"C:\\Program Files (x86)\\Katawa Shoujo\\Katawa Shoujo.exe",
+                "C:\\Program Files (x86)\\Audacity\\audacity.exe"
         };
 
         for (int i = 0; i < paths.length; i++) {
-            Assert.assertEquals(TargetMarker.BOTH, PathAnalyzer.analyse(fileName,paths[i]));
+            Assert.assertEquals(TargetMarker.BOTH, PathAnalyzer.analyse(fileName[i],paths[i]));
         }
 
     }

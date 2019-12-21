@@ -70,6 +70,18 @@ public class Preset {
 
     }
 
+    public boolean contains(Program program) {
+        return programs.contains(program);
+    }
+
+    public boolean contains(String programPath) {
+        for (Program program : programs) {
+            if (program.getPath().equals(programPath))
+                return true;
+        }
+        return false;
+    }
+
     public void deleteProgram(Program program) {
         programs.remove(program);
         try {
@@ -87,6 +99,17 @@ public class Preset {
 
     public void setPrograms(List<Program> programs) {
         this.programs = programs;
+    }
+
+    @Override
+    public String toString() {
+        String temp = "";
+        for (Program program : programs) {
+            temp += program.toString() + '\n';
+        }
+        return "Preset " +
+                "name: " + name + '\n' +
+                "Programs: " + temp;
     }
 
     /**
@@ -132,20 +155,7 @@ public class Preset {
                     Preset.this);
 
 
-//            try (JsonWriter writer = new JsonWriter(new FileWriter(presetDirectory.getAbsolutePath() +
-//                    File.separator + name))) {
-//                writer.beginObject();
-//                Integer k = 1;
-//                for (Program program : programs) {
-//                    writer.name("program" + k.toString());
-//                    writer.beginArray();
-//                    writer.value(program.getName());
-//                    writer.value(program.getPath());
-//                    writer.endArray();
-//                    ++k;
-//                }
-//                writer.endObject();
-//            }
+
         }
         /**
          * Загружает пресет из JSON-файла
@@ -160,26 +170,6 @@ public class Preset {
             Preset.this.setPrograms(preset.getPrograms());
             Preset.this.setName(preset.getName());
 
-
-
-//            Map<String, Program> programs = new HashMap<>();
-//            Integer k = 1;
-//            try (JsonReader reader = new JsonReader(new FileReader(presetDirectory.getAbsolutePath() +
-//                    File.separator + name + ".json"))) {
-//                reader.beginObject();
-//                while (reader.hasNext()) {
-//                    if (reader.nextName().equals("program" + k.toString())) {
-//                        reader.beginArray();
-//                        String programName = reader.nextString();
-//                        String programPath = reader.nextString();
-//                        programs.put(programName, new Program(programName, programPath, Precision.CORRECT));
-//                        reader.endArray();;
-//                    }
-//                    ++k;
-//                }
-//                reader.endObject();
-//            }
-//            return programs;
         }
 
         public void updatePreset() {

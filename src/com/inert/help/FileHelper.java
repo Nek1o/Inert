@@ -61,7 +61,7 @@ public class FileHelper {
         BufferedWriter writer =
                 new BufferedWriter(
                         new OutputStreamWriter(
-                                new FileOutputStream(new File("resources" + File.pathSeparator +
+                                new FileOutputStream(new File("resources" + File.separator +
                                         "PathsAndProgramsStorage.txt")), StandardCharsets.UTF_16LE));
         for (Map.Entry<String, Program> pair : pathsAndPrograms.entrySet()) {
             // сохраняем через пробел и двоеточие
@@ -73,7 +73,7 @@ public class FileHelper {
     public static Map<String, Program> loadPathsAndPrograms() throws IOException {
         Map<String, Program> loadedPathsAndPrograms = new HashMap<>();
         List<String> lines;
-        lines = Files.readAllLines(Paths.get("resources" + File.pathSeparator +
+        lines = Files.readAllLines(Paths.get("resources" + File.separator +
                 "PathsAndProgramsStorage.txt"), StandardCharsets.UTF_16LE);
         for (String line : lines) {
             loadedPathsAndPrograms.put(line.substring(0, line.indexOf(" :")), // имя

@@ -6,7 +6,7 @@ public class StandardAnalyzerTest {
 
 
     @Test
-    public void testStanardDirs() {
+    public void testStandardDirs() {
         String[] knownStandardDirs = {"Windows", "Microsoft", "nvidia"};
 
         for (int i = 0; i < knownStandardDirs.length; i++) {

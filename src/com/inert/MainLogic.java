@@ -22,13 +22,14 @@ public class MainLogic {
 
         ProgramSearch programSearch = new ProgramSearchMultiThread();
         Map<String, Program> programsMap = programSearch.getPaths();
-//        for(Map.Entry<String, Program> x : programSearch.getPaths().entrySet()){
-//            //preset.addProgram(x.getValue());
-//            System.out.println(x.getValue());
-//        }
-        preset.addProgram(programsMap.get("mozilla firefox 69.0.3 (x64 ru)"));
-        preset.addProgram(programsMap.get("katawa shoujo"));
-        PresetStarter.start(preset);
+        for(Map.Entry<String, Program> x : programSearch.getPaths().entrySet()){
+            //preset.addProgram(x.getValue());
+            System.out.println(x.getValue());
+        }
+        //FileHelper.savePathsAndPrograms(programsMap);
+        //preset.addProgram(programsMap.get("mozilla firefox 69.0.3 (x64 ru)"));
+        //preset.addProgram(programsMap.get("katawa shoujo"));
+        //PresetStarter.start(preset);
 
         //FileHelper.launchForTheFirstTime();
     }
