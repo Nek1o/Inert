@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.inert.controllers.AddPresetController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="300.0" styleClass="background" stylesheets="@Dark.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.inert.controllers.AddPresetController">
    <children>
       <TextField fx:id="presetNameInput" layoutX="76.0" layoutY="75.0" onKeyPressed="#onKeyPressedPresetNameInput" />
       <Button fx:id="okButton" layoutX="140.0" layoutY="113.0" mnemonicParsing="false" onKeyPressed="#onKeyPressedOkButton" onMouseClicked="#onMouseClickedOkButton" prefHeight="25.0" prefWidth="69.0" text="OK" />

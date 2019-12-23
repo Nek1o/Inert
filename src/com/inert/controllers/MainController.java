@@ -225,6 +225,7 @@ public class MainController {
             presetButton.setUserData(AddPresetControllerHelper.getPresetName());
             presetButton.setToggleGroup(presetToggleGroup);
 
+
             addPresetVBox.setAlignment(Pos.CENTER);
             addPresetVBox.setSpacing(10.);
 
